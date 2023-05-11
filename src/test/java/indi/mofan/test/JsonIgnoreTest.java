@@ -103,4 +103,42 @@ public class JsonIgnoreTest implements WithAssertions {
             private String string;
         }
     }
+
+    interface ParentInterface {
+    }
+
+    @Getter
+    @Setter
+    static class Subclass implements ParentInterface {
+        private String str;
+    }
+
+    @Getter
+    @Setter
+    static class Composite {
+        private String string;
+        private Integer integer;
+        private Subclass subclass;
+    }
+
+    @JsonIgnoreType
+    static class ParentInterfaceMixIn {
+    }
+
+    @Test
+    @SneakyThrows
+    public void testJsonIgnoreTypeByParentClass() {
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.addMixIn(ParentInterface.class, ParentInterfaceMixIn.class);
+
+        Composite composite = new Composite();
+        composite.setString("string");
+        composite.setInteger(10);
+        Subclass subclass = new Subclass();
+        subclass.setStr("str");
+        composite.setSubclass(subclass);
+
+        String json = mapper.writeValueAsString(composite);
+        JsonAssert.with(json).assertNotDefined("subclass");
+    }
 }
