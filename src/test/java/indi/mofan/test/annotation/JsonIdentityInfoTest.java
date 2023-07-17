@@ -137,4 +137,49 @@ public class JsonIdentityInfoTest {
                 i -> i.getDepts().get(1).getEmployees().get(0).getEmpId()
         ).containsSequence(1L, 1L);
     }
+
+    @Getter
+    @Setter
+    @JsonIdentityInfo(generator = ObjectIdGenerators.IntSequenceGenerator.class, property = "@key")
+    static class Entity {
+        private String name;
+        private List<Entity> entities;
+    }
+
+    @Test
+    @SneakyThrows
+    public void testIntSequenceGenerator() {
+        Entity entity = new Entity();
+        entity.setName("Root");
+
+        Entity firstSubEntity = new Entity();
+        firstSubEntity.setName("SubEntity-1");
+        Entity secondSubEntity = new Entity();
+        secondSubEntity.setName("SubEntity-2");
+
+        entity.setEntities(List.of(entity, firstSubEntity, secondSubEntity));
+
+        JsonMapper mapper = JsonMapper.builder().build();
+        String expectJson = """
+                {
+                  "@key": 1,
+                  "name": "Root",
+                  "entities": [
+                    1,
+                    {
+                      "@key": 2,
+                      "name": "SubEntity-1",
+                      "entities": null
+                    },
+                    {
+                      "@key": 3,
+                      "name": "SubEntity-2",
+                      "entities": null
+                    }
+                  ]
+                }
+                """;
+        JsonAssertions.assertThatJson(mapper.writeValueAsString(entity))
+                .isEqualTo(expectJson);
+    }
 }
