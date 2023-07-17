@@ -56,7 +56,7 @@ public class JsonIdentityInfoTest {
         // 序列化
         String json = mapper.writeValueAsString(customer);
         // language=json
-        String exceptJson = """
+        String expectJson = """
                 {
                   "id": 2,
                   "name": "Peter",
@@ -68,7 +68,7 @@ public class JsonIdentityInfoTest {
                 }
                  """;
         // order 虽然依赖了 customer，但在使用 @JsonIdentityInfo 注解后，以指定的 id 作为代替
-        JsonAssertions.assertThatJson(json).isEqualTo(exceptJson);
+        JsonAssertions.assertThatJson(json).isEqualTo(expectJson);
 
         Customer newCustom = mapper.readValue(json, Customer.class);
         Assertions.assertThat(newCustom).isEqualTo(newCustom.getOrder().getCustomer()).extracting(
@@ -114,7 +114,7 @@ public class JsonIdentityInfoTest {
         JsonMapper mapper = JsonMapper.builder().build();
         String json = mapper.writeValueAsString(employee);
         // language=json
-        String exceptJson = """
+        String expectJson = """
                 {
                   "empId": 1,
                   "depts": [
@@ -129,7 +129,7 @@ public class JsonIdentityInfoTest {
                   ]
                 }
                 """;
-        JsonAssertions.assertThatJson(json).isEqualTo(exceptJson);
+        JsonAssertions.assertThatJson(json).isEqualTo(expectJson);
 
         Employee newEmp = mapper.readValue(json, Employee.class);
         Assertions.assertThat(newEmp).extracting(

@@ -49,11 +49,14 @@ public class IgnoreTest implements WithAssertions {
     @Test
     @SneakyThrows
     public void testFailOnUnknownProperties() {
-        String json = "{\n" +
-                "  \"name\": \"默烦\",\n" +
-                "  \"age\": 21,\n" +
-                "  \"unknown\": \"UNKNOWN\"\n" +
-                "}";
+        //language=JSON
+        String json = """
+                {
+                  "name": "默烦",
+                  "age": 21,
+                  "unknown": "UNKNOWN"
+                }
+                """;
         ObjectMapper mapper = new ObjectMapper();
         assertThatThrownBy(() -> mapper.readValue(json, People.class))
                 .isInstanceOf(UnrecognizedPropertyException.class);
@@ -116,16 +119,18 @@ public class IgnoreTest implements WithAssertions {
 
 
         //language=JSON
-        String deserializedJson = "{\n" +
-                "  \"name\": \"默烦\",\n" +
-                "  \"age\": 21,\n" +
-                "  \"idCardNum\": \"XXX\",\n" +
-                "  \"otherSensitiveInfo\": \"ABC\",\n" +
-                "  \"company\": {\n" +
-                "    \"name\": \"百年不倒股份有限公司\",\n" +
-                "    \"location\": \"UNKNOWN\"\n" +
-                "  }\n" +
-                "}";
+        String deserializedJson = """
+                {
+                  "name": "默烦",
+                  "age": 21,
+                  "idCardNum": "XXX",
+                  "otherSensitiveInfo": "ABC",
+                  "company": {
+                    "name": "百年不倒股份有限公司",
+                    "location": "UNKNOWN"
+                  }
+                }
+                """;
         Person newPerson = mapper.readValue(deserializedJson, Person.class);
         assertThat(newPerson).hasNoNullFieldsOrPropertiesExcept("otherSensitiveInfo")
                 .extracting("idCardNum", "company.location")

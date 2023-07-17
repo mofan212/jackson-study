@@ -4,13 +4,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.jayway.jsonassert.JsonAssert;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
+import net.javacrumbs.jsonunit.assertj.JsonAssertions;
 import org.assertj.core.api.WithAssertions;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
 
 /**
  * @author mofan
@@ -140,5 +144,55 @@ public class JsonIgnoreTest implements WithAssertions {
 
         String json = mapper.writeValueAsString(composite);
         JsonAssert.with(json).assertNotDefined("subclass");
+    }
+
+    @Getter
+    @Setter
+    static class User {
+        private String username;
+        private String pwd;
+        private Role role;
+    }
+
+    @Getter
+    @Setter
+    static class Role {
+        private String name;
+        @JsonIgnoreProperties("role")
+        private List<User> users;
+    }
+
+    @Test
+    @SneakyThrows
+    public void testCircularReference() {
+        User user = new User();
+        user.setUsername("mofan");
+        user.setPwd("123456");
+
+        Role role = new Role();
+        role.setName("admin");
+        role.setUsers(List.of(user));
+
+        user.setRole(role);
+
+        JsonMapper mapper = JsonMapper.builder().build();
+        String json = mapper.writeValueAsString(user);
+        // language=JSON
+        String expectJson = """
+                {
+                  "username": "mofan",
+                  "pwd": "123456",
+                  "role": {
+                    "name": "admin",
+                    "users": [
+                      {
+                        "username": "mofan",
+                        "pwd": "123456"
+                      }
+                    ]
+                  }
+                }
+                """;
+        JsonAssertions.assertThatJson(json).isEqualTo(expectJson);
     }
 }
