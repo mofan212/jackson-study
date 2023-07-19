@@ -21,7 +21,10 @@ import lombok.SneakyThrows;
 import lombok.experimental.FieldNameConstants;
 import net.javacrumbs.jsonunit.assertj.JsonAssertions;
 import org.assertj.core.api.WithAssertions;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import java.beans.ConstructorProperties;
 import java.io.File;
@@ -37,6 +40,7 @@ import java.util.Map;
 /**
  * @author mofan 2020/12/14
  */
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class JacksonBasicTest implements WithAssertions {
 
     @Test
@@ -363,7 +367,8 @@ public class JacksonBasicTest implements WithAssertions {
 
         // 写为字节流并读取
         byte[] bytes = mapper.writeValueAsBytes(user);
-        assertThat(mapper.readValue(bytes, User.class)).extracting(User::getName, User::getAge, User::getHeight)
+        assertThat(mapper.readValue(bytes, User.class))
+                .extracting(User::getName, User::getAge, User::getHeight)
                 .containsExactly("默烦", 19, 178.2);
     }
 
@@ -424,6 +429,7 @@ public class JacksonBasicTest implements WithAssertions {
     }
 
     @Test
+    @Order(1)
     @SneakyThrows
     public void testJsonGenerator() {
         ObjectMapper mapper = new ObjectMapper();
@@ -464,6 +470,7 @@ public class JacksonBasicTest implements WithAssertions {
     }
 
     @Test
+    @Order(2)
     @SneakyThrows
     public void testGetToken() {
         JsonFactory jsonFactory = new JsonFactory();
@@ -494,6 +501,7 @@ public class JacksonBasicTest implements WithAssertions {
     }
 
     @Test
+    @Order(3)
     @SneakyThrows
     public void testJsonParser() {
         ObjectMapper mapper = new ObjectMapper();
@@ -600,8 +608,10 @@ public class JacksonBasicTest implements WithAssertions {
                 }
                 """;
         Student student = mapper.readValue(json, Student.class);
-        assertThat(student).extracting(Student::stuName, Student::age, Student::height, i -> i.school().name())
-                .containsExactly("默烦", 20, 177.5, "Test");
+        assertThat(student).extracting(
+                Student::stuName, Student::age,
+                Student::height, i -> i.school().name()
+        ).containsExactly("默烦", 20, 177.5, "Test");
     }
 
     @FieldNameConstants
@@ -667,7 +677,8 @@ public class JacksonBasicTest implements WithAssertions {
         assertThat(ints).containsExactly(1, 2, 3);
         // POJO to Map
         User user = new User("mofan", 19, 178.3);
-        Map<String, Object> map = mapper.convertValue(user, new TypeReference<>() {});
+        Map<String, Object> map = mapper.convertValue(user, new TypeReference<>() {
+        });
         assertThat(map).containsExactlyInAnyOrderEntriesOf(Map.of(
                 "age", 19,
                 "name", "mofan",
