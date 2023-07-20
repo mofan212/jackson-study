@@ -3,6 +3,7 @@ package indi.mofan.test;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonIgnoreType;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.jayway.jsonassert.JsonAssert;
@@ -26,17 +27,30 @@ public class JsonIgnoreTest implements WithAssertions {
     @SneakyThrows
     public void testJsonIgnore() {
         JsonIgnoreObject object = new JsonIgnoreObject();
-        object.setIgnore("ignore");
+        object.setPwd("123456");
         object.setStr("str");
         object.setInteger(212);
 
         ObjectMapper mapper = new ObjectMapper();
         String json = mapper.writeValueAsString(object);
-        JsonAssert.with(json).assertNotDefined("$.ignore");
+        // 序列化的 JSON 中没有 pwd
+        JsonAssert.with(json).assertNotDefined("$.pwd");
         assertThat(mapper.readValue(json, JsonIgnoreObject.class))
                 .isNotNull()
-                .extracting(JsonIgnoreObject::getStr, JsonIgnoreObject::getInteger, JsonIgnoreObject::getIgnore)
+                .extracting(JsonIgnoreObject::getStr, JsonIgnoreObject::getInteger, JsonIgnoreObject::getPwd)
                 .containsExactly("str", 212, null);
+
+        //language=JSON
+        String newJson = """
+                {
+                  "str": "str",
+                  "integer": 212,
+                  "password": "987654321"
+                }
+                """;
+        assertThat(mapper.readValue(newJson, JsonIgnoreObject.class))
+                .extracting(JsonIgnoreObject::getPwd)
+                .isEqualTo("987654321");
     }
 
     @Getter
@@ -44,8 +58,17 @@ public class JsonIgnoreTest implements WithAssertions {
     static class JsonIgnoreObject {
         private String str;
         private Integer integer;
+        private String pwd;
+
         @JsonIgnore
-        private String ignore;
+        public String getPwd() {
+            return pwd;
+        }
+
+        @JsonProperty("password")
+        public void setPwd(String pwd) {
+            this.pwd = pwd;
+        }
     }
 
     @Test
@@ -68,7 +91,9 @@ public class JsonIgnoreTest implements WithAssertions {
     @JsonIgnoreProperties({"ignore", "integer"})
     static class JsonIgnorePropertiesObj {
         private String str;
+        // @JsonIgnore
         private String ignore;
+        // @JsonIgnore
         private Integer integer;
     }
 

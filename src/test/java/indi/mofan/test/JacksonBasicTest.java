@@ -2,6 +2,8 @@ package indi.mofan.test;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -567,10 +569,29 @@ public class JacksonBasicTest implements WithAssertions {
         Employee readValue = mapper.readValue(str, Employee.class);
         assertThat(readValue).extracting(Employee::getName, Employee::getAge, Employee::getHeight)
                 .containsExactly("mofan", 19, 178.2);
-        String userJson = "{\"employeeName\":\"默烦\",\"age\":20,\"height\":177.5}";
+        //language=JSON
+        String userJson = """
+                {
+                  "employeeName": "默烦",
+                  "age": 20,
+                  "height": 177.5
+                }
+                """;
         Employee value = mapper.readValue(userJson, Employee.class);
         assertThat(value).extracting(Employee::getName, Employee::getAge, Employee::getHeight)
                 .containsExactly("默烦", 20, 177.5);
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @JsonRootName("root")
+    @JsonPropertyOrder({"decimal", "string", "integer"})
+    static class Root {
+        private String string;
+        private Integer integer;
+        private Double decimal;
     }
 
     @Test
@@ -578,19 +599,30 @@ public class JacksonBasicTest implements WithAssertions {
     public void testSerializationAnnotation() {
         // 使用 @JsonRootName 注解后，必须启用 SerializationFeature.WRAP_ROOT_VALUE
         ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.WRAP_ROOT_VALUE);
-        User user = new User("mofan", 19, 178.2);
-        // 序列化
-        String str = mapper.writerWithDefaultPrettyPrinter().writeValueAsString(user);
+        Root root = new Root("str", 212, 3.14);
+        String json = mapper.writeValueAsString(root);
+        //language=JSON
         String expectJson = """
                 {
-                  "User" : {
-                    "name" : "mofan",
-                    "age" : 19,
-                    "height" : 178.2
+                  "root": {
+                    "decimal": 3.14,
+                    "string": "str",
+                    "integer": 212
                   }
                 }
                 """;
-        JsonAssertions.assertThatJson(str).isEqualTo(expectJson);
+        JsonAssertions.assertThatJson(json).isEqualTo(expectJson);
+        // 转成 LinkedHashMap 方便比较顺序（此时最外层不再有 root 根属性）
+        LinkedHashMap<String, Object> map = mapper.convertValue(root, new TypeReference<>() {
+        });
+        Map<String, Object> expectMap = new LinkedHashMap<>();
+        expectMap.put("decimal", 3.14);
+        expectMap.put("string", "str");
+        expectMap.put("integer", 212);
+        assertThat(map).asInstanceOf(MAP)
+                .doesNotContainKey("root")
+                .hasSize(3)
+                .containsExactlyEntriesOf(expectMap);
     }
 
     @Test
