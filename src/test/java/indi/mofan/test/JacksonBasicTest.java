@@ -438,28 +438,28 @@ public class JacksonBasicTest implements WithAssertions {
         JsonFactory factory = mapper.getFactory();
 
         File file = new File("testJsonGenerator.json");
-        JsonGenerator generator = factory.createGenerator(file, JsonEncoding.UTF8);
 
-        // start {
-        generator.writeStartObject();
-        // "name" : "默烦"
-        generator.writeStringField("name", "默烦");
-        // "age" : 18
-        generator.writeNumberField("age", 18);
-        // "isGirl" : false
-        generator.writeBooleanField("isGirl", false);
-        // "hobby" : ["code", "study"]
-        generator.writeFieldName("hobby");
-        // [
-        generator.writeStartArray();
-        // code, study
-        generator.writeString("code");
-        generator.writeString("study");
-        // ]
-        generator.writeEndArray();
-        // end }
-        generator.writeEndObject();
-        generator.close();
+        try (JsonGenerator generator = factory.createGenerator(file, JsonEncoding.UTF8)) {
+            // start {
+            generator.writeStartObject();
+            // "name" : "默烦"
+            generator.writeStringField("name", "默烦");
+            // "age" : 18
+            generator.writeNumberField("age", 18);
+            // "isGirl" : false
+            generator.writeBooleanField("isGirl", false);
+            // "hobby" : ["code", "study"]
+            generator.writeFieldName("hobby");
+            // [
+            generator.writeStartArray();
+            // code, study
+            generator.writeString("code");
+            generator.writeString("study");
+            // ]
+            generator.writeEndArray();
+            // end }
+            generator.writeEndObject();
+        }
 
         // 数据写入结束，来读取一下
         Map<String, Object> map = mapper.readValue(file, new TypeReference<>() {
