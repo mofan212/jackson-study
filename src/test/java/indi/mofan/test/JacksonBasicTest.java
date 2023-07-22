@@ -23,6 +23,7 @@ import lombok.SneakyThrows;
 import lombok.experimental.FieldNameConstants;
 import net.javacrumbs.jsonunit.assertj.JsonAssertions;
 import org.assertj.core.api.WithAssertions;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -32,12 +33,14 @@ import java.beans.ConstructorProperties;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.StringReader;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @author mofan 2020/12/14
@@ -70,7 +73,8 @@ public class JacksonBasicTest implements WithAssertions {
     @SneakyThrows
     public void testDeserialization_1() {
         ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-        File file = new File("src\\main\\java\\indi\\mofan\\json\\user.json");
+        URL url = getClass().getClassLoader().getResource("./json/user.json");
+        File file = new File(Objects.requireNonNull(url).getFile());
         // 从 File 中读取对象
         User user1 = mapper.readValue(file, User.class);
         assertThat(user1).extracting(User::getName, User::getAge, User::getHeight)

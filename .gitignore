@@ -36,3 +36,6 @@ replay_pid*
 simpleJSON.json
 test.json
 testJsonGenerator.json
+test.yaml
+test.xml
+xml-annotation.xml
