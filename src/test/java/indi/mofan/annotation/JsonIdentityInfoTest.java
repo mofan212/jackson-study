@@ -1,4 +1,4 @@
-package indi.mofan.test.annotation;
+package indi.mofan.annotation;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;

@@ -1,4 +1,4 @@
-package indi.mofan.test.xml;
+package indi.mofan.xml;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.ObjectMapper;

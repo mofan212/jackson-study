@@ -1,4 +1,4 @@
-package indi.mofan.test;
+package indi.mofan;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -23,7 +23,6 @@ import lombok.SneakyThrows;
 import lombok.experimental.FieldNameConstants;
 import net.javacrumbs.jsonunit.assertj.JsonAssertions;
 import org.assertj.core.api.WithAssertions;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;

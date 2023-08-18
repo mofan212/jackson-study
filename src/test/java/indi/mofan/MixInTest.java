@@ -1,4 +1,4 @@
-package indi.mofan.test;
+package indi.mofan;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
