@@ -7,6 +7,10 @@
     <groupId>indi.mofan</groupId>
     <artifactId>jackson-study</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <modules>
+        <module>deprecated-examples</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>

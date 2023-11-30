@@ -21,7 +21,7 @@ import java.io.File;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class ParseYamlTest implements WithAssertions {
 
-    private static final File YAML_FILE = new File("test.yaml");
+    private static final File YAML_FILE = new File("./target/test.yaml");
 
     @Getter
     @Setter

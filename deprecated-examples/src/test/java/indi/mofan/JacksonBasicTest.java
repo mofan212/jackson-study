@@ -366,7 +366,7 @@ public class JacksonBasicTest implements WithAssertions {
         JsonAssertions.assertThatJson(str).isEqualTo(expectJson);
 
         // 写为文件
-        File file = new File("test.json");
+        File file = new File("./target/test.json");
         mapper.writeValue(file, user);
         assertThat(file).exists();
 
@@ -410,7 +410,7 @@ public class JacksonBasicTest implements WithAssertions {
         ObjectMapper mapper = new ObjectMapper();
         JsonFactory factory = mapper.getFactory();
 
-        File file = new File("simpleJSON.json");
+        File file = new File("./target/simpleJSON.json");
         JsonGenerator generator = factory.createGenerator(file, JsonEncoding.UTF8);
 
         generator.writeStartObject();
@@ -440,7 +440,7 @@ public class JacksonBasicTest implements WithAssertions {
         ObjectMapper mapper = new ObjectMapper();
         JsonFactory factory = mapper.getFactory();
 
-        File file = new File("testJsonGenerator.json");
+        File file = new File("./target/testJsonGenerator.json");
 
         try (JsonGenerator generator = factory.createGenerator(file, JsonEncoding.UTF8)) {
             // start {
@@ -480,7 +480,7 @@ public class JacksonBasicTest implements WithAssertions {
     public void testGetToken() {
         JsonFactory jsonFactory = new JsonFactory();
         // 先执行 testJsonGenerator() 测试方法，确保存在 testJsonGenerator.json 文件
-        File file = new File("testJsonGenerator.json");
+        File file = new File("./target/testJsonGenerator.json");
         JsonParser parser = jsonFactory.createParser(file);
 
         List<JsonToken> list = new ArrayList<>();
@@ -512,7 +512,7 @@ public class JacksonBasicTest implements WithAssertions {
         ObjectMapper mapper = new ObjectMapper();
         JsonFactory factory = mapper.getFactory();
 
-        File file = new File("testJsonGenerator.json");
+        File file = new File("./target/testJsonGenerator.json");
         JsonParser parser = factory.createParser(file);
         while (!parser.isClosed()) {
             if (JsonToken.FIELD_NAME.equals(parser.nextToken())) {

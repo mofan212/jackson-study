@@ -23,7 +23,7 @@ import java.util.Date;
  */
 public class ParseXmlTest implements WithAssertions {
 
-    private static final File XML_FILE = new File("test.xml");
+    private static final File XML_FILE = new File("./target/test.xml");
 
     @Getter
     @Setter
@@ -83,7 +83,7 @@ public class ParseXmlTest implements WithAssertions {
                 // 格式化输出
                 .enable(SerializationFeature.INDENT_OUTPUT)
                 .build();
-        File file = new File("xml-annotation.xml");
+        File file = new File("./target/xml-annotation.xml");
         mapper.writeValue(file, object);
         assertThat(file).isNotEmpty();
     }

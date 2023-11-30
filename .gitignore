@@ -31,11 +31,3 @@ replay_pid*
 # Java class files
 *.class
 **/target
-
-# test file
-simpleJSON.json
-test.json
-testJsonGenerator.json
-test.yaml
-test.xml
-xml-annotation.xml
