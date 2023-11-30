@@ -10,12 +10,15 @@
     <packaging>pom</packaging>
     <modules>
         <module>deprecated-examples</module>
+        <module>jackson-annotations</module>
     </modules>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jackson.version>2.15.2</jackson.version>
+        <commons.lang3>3.13.0</commons.lang3>
     </properties>
 
     <dependencies>
@@ -48,6 +51,12 @@
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
             <version>${jackson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons.lang3}</version>
         </dependency>
 
         <dependency>
