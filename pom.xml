@@ -11,6 +11,7 @@
     <modules>
         <module>deprecated-examples</module>
         <module>jackson-annotations</module>
+        <module>mapper-examples</module>
     </modules>
 
     <properties>
