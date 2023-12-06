@@ -4,3 +4,4 @@
 
 - [Intro to the Jackson ObjectMapper](https://www.baeldung.com/jackson-object-mapper-tutorial) (popular)
 - [Jackson Annotation Examples](https://www.baeldung.com/jackson-annotations) (popular)
+- [Using Optional with Jackson](https://www.baeldung.com/jackson-optional)

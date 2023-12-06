@@ -48,6 +48,13 @@
             <version>${jackson.version}</version>
         </dependency>
 
+        <!--  处理 JDK8 类型，比如 Optional  -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jdk8</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
