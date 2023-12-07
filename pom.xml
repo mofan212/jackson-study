@@ -12,6 +12,7 @@
         <module>deprecated-examples</module>
         <module>jackson-annotations</module>
         <module>mapper-examples</module>
+        <module>gson</module>
     </modules>
 
     <properties>
