@@ -9,3 +9,7 @@
 # Basic Jackson Unmarshalling
 
 - [Jackson Unmarshalling JSON with Unknown Properties](https://www.baeldung.com/jackson-deserialize-json-unknown-properties)
+
+# Advanced Jackson Marshalling
+
+- [Map Serialization and Deserialization with Jackson](https://www.baeldung.com/jackson-map)
