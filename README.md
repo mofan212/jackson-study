@@ -13,3 +13,4 @@
 # Advanced Jackson Marshalling
 
 - [Map Serialization and Deserialization with Jackson](https://www.baeldung.com/jackson-map)
+- [Serialize Only Fields That Meet a Custom Criteria With Jackson](https://www.baeldung.com/jackson-serialize-field-custom-criteria)

@@ -1,1 +1,2 @@
 - [Intro to the Jackson ObjectMapper](https://www.baeldung.com/jackson-object-mapper-tutorial)
+- [Serialize Only Fields That Meet a Custom Criteria With Jackson](https://www.baeldung.com/jackson-serialize-field-custom-criteria)
