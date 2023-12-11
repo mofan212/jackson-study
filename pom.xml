@@ -13,13 +13,14 @@
         <module>jackson-annotations</module>
         <module>mapper-examples</module>
         <module>gson</module>
+        <module>date</module>
     </modules>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jackson.version>2.15.2</jackson.version>
+        <jackson.version>2.16.0</jackson.version>
         <commons.lang3>3.13.0</commons.lang3>
     </properties>
 
