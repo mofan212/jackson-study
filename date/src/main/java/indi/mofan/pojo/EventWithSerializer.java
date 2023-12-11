@@ -1,6 +1,8 @@
 package indi.mofan.pojo;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import indi.mofan.serializer.CustomDateDeserializer;
 import indi.mofan.serializer.CustomDateSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,5 +22,6 @@ public class EventWithSerializer {
     public String name;
 
     @JsonSerialize(using = CustomDateSerializer.class)
+    @JsonDeserialize(using = CustomDateDeserializer.class)
     public Date eventDate;
 }
