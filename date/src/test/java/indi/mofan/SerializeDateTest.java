@@ -4,8 +4,11 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import indi.mofan.pojo.Event;
 import indi.mofan.pojo.EventWithFormat;
+import indi.mofan.pojo.EventWithJodaTime;
+import indi.mofan.pojo.EventWithLocalDateTime;
 import indi.mofan.pojo.EventWithSerializer;
 import lombok.SneakyThrows;
 import net.javacrumbs.jsonunit.assertj.JsonAssertions;
@@ -15,6 +18,7 @@ import org.joda.time.DateTimeZone;
 import org.junit.jupiter.api.Test;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -145,7 +149,50 @@ public class SerializeDateTest implements WithAssertions {
     }
 
     @Test
+    @SneakyThrows
     public void testSerializeJodaTimeWithCustomSerializer() {
+        DateTime date = new DateTime(2014, 12, 20, 2, 30);
+        EventWithJodaTime event = new EventWithJodaTime("party", date);
 
+        JsonMapper mapper = JsonMapper.builder().build();
+        String result = mapper.writeValueAsString(event);
+        //language=JSON
+        String expectJson = """
+                {
+                  "name": "party",
+                  "eventDate": "2014-12-20 02:30"
+                }
+                """;
+        JsonAssertions.assertThatJson(result).isEqualTo(expectJson);
+    }
+
+    @Test
+    @SneakyThrows
+    public void testSerializeJava8Date() {
+        LocalDateTime date = LocalDateTime.of(2014, 12, 20, 2, 30);
+        JsonMapper mapper = JsonMapper.builder()
+                .addModule(new JavaTimeModule())
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .build();
+
+        String result = mapper.writeValueAsString(date);
+        assertThat(result).isEqualTo("\"2014-12-20T02:30:00\"");
+    }
+
+    @Test
+    @SneakyThrows
+    public void testSerializeJava8DateWithoutAnyExtraDependency() {
+        LocalDateTime date = LocalDateTime.of(2014, 12, 20, 2, 30);
+        EventWithLocalDateTime event = new EventWithLocalDateTime("party", date);
+
+        JsonMapper mapper = JsonMapper.builder().build();
+        String result = mapper.writeValueAsString(event);
+        String expectJson = """
+                {
+                  "name": "party",
+                  "eventDate": "2014-12-20 02:30"
+                }
+                """;
+        JsonAssertions.assertThatJson(result).isEqualTo(expectJson);
     }
 }

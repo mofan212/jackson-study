@@ -1,23 +1,23 @@
 package indi.mofan.pojo;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import indi.mofan.serializer.CustomJodaDateTimeSerializer;
+import indi.mofan.serializer.CustomJava8LocalDateTimeSerializer;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.joda.time.DateTime;
+
+import java.time.LocalDateTime;
 
 /**
  * @author mofan
- * @date 2023/12/11 15:32
+ * @date 2023/12/11 22:44
  */
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EventWithJodaTime {
-
+public class EventWithLocalDateTime {
     public String name;
 
-    @JsonSerialize(using = CustomJodaDateTimeSerializer.class)
-    public DateTime eventDate;
+    @JsonSerialize(using = CustomJava8LocalDateTimeSerializer.class)
+    public LocalDateTime eventDate;
 }
