@@ -9,7 +9,7 @@
     <version>1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>deprecated-examples</module>
+        <module>blog-examples</module>
         <module>jackson-annotations</module>
         <module>mapper-examples</module>
         <module>gson</module>
