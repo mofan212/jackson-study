@@ -17,3 +17,4 @@
 - [How To Serialize and Deserialize Enums with Jackson](https://www.baeldung.com/jackson-serialize-enums)
 - [Jackson – JsonMappingException (No serializer found for class) ](https://www.baeldung.com/jackson-jsonmappingexception)
 - [Jackson JSON views](https://www.baeldung.com/jackson-json-view-annotation)
+- [Jackson Exceptions – Problems and Solutions](https://www.baeldung.com/jackson-exception)
