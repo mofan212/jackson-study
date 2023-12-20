@@ -19,3 +19,8 @@
 - [Jackson JSON views](https://www.baeldung.com/jackson-json-view-annotation)
 - [Jackson Exceptions – Problems and Solutions](https://www.baeldung.com/jackson-exception)
 - [Convert XML to JSON Using Jackson](https://www.baeldung.com/jackson-convert-xml-json)
+- [Serialize and Deserialize Booleans as Integers With Jackson](https://www.baeldung.com/jackson-booleans-as-integers)
+
+# Advanced Jackson Unmarshalling
+
+- [Jackson – Unmarshall to Collection/Array](https://www.baeldung.com/jackson-collection-array)
