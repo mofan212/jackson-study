@@ -24,3 +24,4 @@
 # Advanced Jackson Unmarshalling
 
 - [Jackson – Unmarshall to Collection/Array](https://www.baeldung.com/jackson-collection-array)
+- [Getting Started with Custom Deserialization in Jackson](https://www.baeldung.com/jackson-deserialization)
