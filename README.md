@@ -25,3 +25,7 @@
 
 - [Jackson – Unmarshall to Collection/Array](https://www.baeldung.com/jackson-collection-array)
 - [Getting Started with Custom Deserialization in Jackson](https://www.baeldung.com/jackson-deserialization)
+
+# Advanced Jackson Usage
+
+- [Compare Two JSON Objects with Jackson](https://www.baeldung.com/jackson-compare-two-json-objects)

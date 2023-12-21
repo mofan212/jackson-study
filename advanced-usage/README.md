@@ -1,0 +1,1 @@
+- [Compare Two JSON Objects with Jackson](https://www.baeldung.com/jackson-compare-two-json-objects)

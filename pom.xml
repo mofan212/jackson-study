@@ -14,6 +14,7 @@
         <module>mapper-examples</module>
         <module>gson</module>
         <module>date</module>
+        <module>advanced-usage</module>
     </modules>
 
     <properties>
