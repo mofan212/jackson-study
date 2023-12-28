@@ -107,12 +107,12 @@ public class DecideFieldSerializedAndDeserializedTest implements WithAssertions 
                 .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS)
                 .build();
         MyDtoWithSetter value = mapper.readValue(targetJson, MyDtoWithSetter.class);
-        // 私有字段有 Setter，能够序列化
+        // 私有字段有 Setter，能够反序列化
         assertThat(value).extracting(MyDtoWithSetter::accessIntValue).isEqualTo(212);
 
         MyDtoWithSetter dto = new MyDtoWithSetter();
         dto.setIntValue(2);
-        // 只有 Setter，只能序列化，不能反序列化
+        // 只有 Setter，只能反序列化，不能序列化
         assertThat(mapper.writeValueAsString(dto)).isEqualTo("{}");
     }
 
