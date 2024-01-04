@@ -31,3 +31,4 @@
 - [Compare Two JSON Objects with Jackson](https://www.baeldung.com/jackson-compare-two-json-objects)
 - [Jackson – Bidirectional Relationships](https://www.baeldung.com/jackson-bidirectional-relationships-and-infinite-recursion)
 - [Working with Tree Model Nodes in Jackson](https://www.baeldung.com/jackson-json-node-tree-model)
+- [More Jackson Annotations](https://www.baeldung.com/jackson-advanced-annotations)

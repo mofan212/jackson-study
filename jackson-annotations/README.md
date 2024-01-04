@@ -1,1 +1,2 @@
 - [Jackson Annotation Examples](https://www.baeldung.com/jackson-annotations)
+- [More Jackson Annotations](https://www.baeldung.com/jackson-advanced-annotations)
