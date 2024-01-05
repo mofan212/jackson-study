@@ -17,4 +17,12 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jsonSchema-jakarta</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+    </dependencies>
+
 </project>
