@@ -380,4 +380,32 @@ public class SerializeEnumsTest implements WithAssertions {
         CityWithCustomDeserializerEnum value = mapper.readValue(inputJson, CityWithCustomDeserializerEnum.class);
         assertThat(value.getDistance()).isEqualTo(DistanceWithCustomDeserializer.MILE);
     }
+
+    private enum MyEnum {
+        A,
+        B
+    }
+
+    @Getter
+    @Setter
+    private static class MyObject {
+        private MyEnum myEnum;
+    }
+
+    @Test
+    @SneakyThrows
+    public void testSerializeEnumField() {
+        MyObject object = new MyObject();
+        object.setMyEnum(MyEnum.A);
+
+        JsonMapper mapper = JsonMapper.builder().build();
+        String result = mapper.writeValueAsString(object);
+        // language=JSON
+        String expectJson = """
+                {
+                  "myEnum": "A"
+                }
+                """;
+        JsonAssertions.assertThatJson(result).isEqualTo(expectJson);
+    }
 }
