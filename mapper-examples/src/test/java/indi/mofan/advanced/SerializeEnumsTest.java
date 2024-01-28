@@ -381,31 +381,51 @@ public class SerializeEnumsTest implements WithAssertions {
         assertThat(value.getDistance()).isEqualTo(DistanceWithCustomDeserializer.MILE);
     }
 
-    private enum MyEnum {
+    private enum MyFirstEnum {
         A,
         B
+    }
+
+    private enum MySecondEnum {
+        C("C"),
+        D("D")
+        ;
+
+        private final String name;
+
+        MySecondEnum(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 
     @Getter
     @Setter
     private static class MyObject {
-        private MyEnum myEnum;
+        private MyFirstEnum first;
+        private MySecondEnum second;
     }
 
     @Test
     @SneakyThrows
     public void testSerializeEnumField() {
         MyObject object = new MyObject();
-        object.setMyEnum(MyEnum.A);
+        object.setFirst(MyFirstEnum.A);
+        object.setSecond(MySecondEnum.C);
 
         JsonMapper mapper = JsonMapper.builder().build();
         String result = mapper.writeValueAsString(object);
         // language=JSON
         String expectJson = """
                 {
-                  "myEnum": "A"
+                  "first": "A",
+                  "second":"C"
                 }
                 """;
+        // 默认都是将枚举按 name 进行序列化，不会序列化成对象
         JsonAssertions.assertThatJson(result).isEqualTo(expectJson);
     }
 }
