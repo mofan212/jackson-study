@@ -1,8 +1,12 @@
 package indi.mofan.advanced;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator;
 import com.fasterxml.jackson.databind.jsontype.PolymorphicTypeValidator;
@@ -15,6 +19,7 @@ import net.javacrumbs.jsonunit.assertj.JsonAssertions;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,16 +70,15 @@ public class InheritanceWithJacksonTest implements WithAssertions {
         private List<Vehicle> vehicles;
     }
 
-    private Fleet buildFleet() {
+    private List<Vehicle> buildVehicleList() {
         Car car = new Car("Mercedes-Benz", "S500", 5, 250.0);
         Truck truck = new Truck("Isuzu", "NQR", 7500.0);
+        return new ArrayList<>(List.of(car, truck));
+    }
 
-        List<Vehicle> vehicles = new ArrayList<>();
-        vehicles.add(car);
-        vehicles.add(truck);
-
+    private Fleet buildFleet() {
         Fleet serializedFleet = new Fleet();
-        serializedFleet.setVehicles(vehicles);
+        serializedFleet.setVehicles(buildVehicleList());
         return serializedFleet;
     }
 
@@ -174,5 +178,153 @@ public class InheritanceWithJacksonTest implements WithAssertions {
         List<Vehicle> vehicles = value.getVehicles();
         assertThat(vehicles.getFirst()).isExactlyInstanceOf(Car.class);
         assertThat(vehicles.getLast()).isExactlyInstanceOf(Truck.class);
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @JsonIgnoreProperties({"model", "seatingCapacity"})
+    private static abstract class AnotherCar extends Vehicle {
+
+        private int seatingCapacity;
+        @JsonIgnore
+        private double topSpeed;
+
+        protected AnotherCar(String make, String model, int seatingCapacity, double topSpeed) {
+            super(make, model);
+            this.seatingCapacity = seatingCapacity;
+            this.topSpeed = topSpeed;
+        }
+    }
+
+    @NoArgsConstructor
+    private static class Sedan extends AnotherCar {
+        public Sedan(String make, String model, int seatingCapacity, double topSpeed) {
+            super(make, model, seatingCapacity, topSpeed);
+        }
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    private static class Crossover extends AnotherCar {
+        private double towingCapacity;
+
+        public Crossover(String make, String model, int seatingCapacity,
+                         double topSpeed, double towingCapacity) {
+            super(make, model, seatingCapacity, topSpeed);
+            this.towingCapacity = towingCapacity;
+        }
+    }
+
+    @Test
+    @SneakyThrows
+    public void testIgnoreSupertypePropertiesByAnnotations() {
+        JsonMapper mapper = JsonMapper.builder().build();
+
+        Sedan sedan = new Sedan("Mercedes-Benz", "S500", 5, 250.0);
+        Crossover crossover = new Crossover("BMW", "X6", 5, 250.0, 6000.0);
+
+        List<Vehicle> vehicles = new ArrayList<>();
+        vehicles.add(sedan);
+        vehicles.add(crossover);
+
+        String result = mapper.writeValueAsString(vehicles);
+        // language=JSON
+        String expectJson = """
+                [
+                  {
+                    "make": "Mercedes-Benz"
+                  },
+                  {
+                    "make": "BMW",
+                    "towingCapacity": 6000.0
+                  }
+                ]
+                """;
+        JsonAssertions.assertThatJson(result).isEqualTo(expectJson);
+    }
+
+    private static abstract class CarMixIn {
+        /**
+         * make 是在父类 Vehicle 中的
+         */
+        @JsonIgnore
+        public String make;
+        /**
+         * topSpeed 是在当前类 Car 中的
+         */
+        @JsonIgnore
+        public String topSpeed;
+    }
+
+    @Test
+    @SneakyThrows
+    public void testIgnoreSupertypePropertiesByMixIn() {
+        JsonMapper mapper = JsonMapper.builder()
+                .addMixIn(Car.class, CarMixIn.class)
+                .build();
+
+        List<Vehicle> vehicles = buildVehicleList();
+
+        String result = mapper.writeValueAsString(vehicles);
+        // language=JSON
+        String expectJson = """
+                [
+                  {
+                    "model": "S500",
+                    "seatingCapacity": 5
+                  },
+                  {
+                    "make": "Isuzu",
+                    "model": "NQR",
+                    "payloadCapacity": 7500.0
+                  }
+                ]
+                """;
+        /*
+         * Car 上的 make 和 topSpeed 被忽略了，但 Truck 里的 make 没有被忽略
+         */
+        JsonAssertions.assertThatJson(result).isEqualTo(expectJson);
+    }
+
+    private static class IgnoranceIntrospector extends JacksonAnnotationIntrospector {
+        @Serial
+        private static final long serialVersionUID = 3450201475667905567L;
+
+        public boolean hasIgnoreMarker(AnnotatedMember m) {
+            /*
+             * 忽略 Vehicle 中的 model
+             * 忽略 Car 中的所有字段
+             * 忽略名为 payloadCapacity 的字段
+             */
+            return m.getDeclaringClass() == Vehicle.class && "model".equals(m.getName())
+                   || m.getDeclaringClass() == Car.class
+                   || "payloadCapacity".equals(m.getName())
+                   || super.hasIgnoreMarker(m);
+        }
+    }
+
+    @Test
+    @SneakyThrows
+    public void testIgnoreSupertypePropertiesByAnnotationIntrospection() {
+        JsonMapper mapper = JsonMapper.builder()
+                .annotationIntrospector(new IgnoranceIntrospector())
+                .build();
+
+        List<Vehicle> vehicles = buildVehicleList();
+        String result = mapper.writeValueAsString(vehicles);
+        // language=JSON
+        String expectJson = """
+                [
+                  {
+                    "make": "Mercedes-Benz"
+                  },
+                  {
+                    "make": "Isuzu"
+                  }
+                ]
+                """;
+        JsonAssertions.assertThatJson(result).isEqualTo(expectJson);
     }
 }
