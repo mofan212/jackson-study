@@ -1,7 +1,9 @@
 package indi.mofan.advanced;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -326,5 +328,120 @@ public class InheritanceWithJacksonTest implements WithAssertions {
                 ]
                 """;
         JsonAssertions.assertThatJson(result).isEqualTo(expectJson);
+    }
+
+    private static class OtherCarMixIn extends Vehicle {
+        @JsonIgnore
+        private int seatingCapacity;
+
+        @JsonIgnore
+        private double topSpeed;
+    }
+
+    private static class OtherTruckMixIn extends Vehicle {
+        @JsonIgnore
+        private double payloadCapacity;
+    }
+
+    @Test
+    public void testConversionBetweenSubtypes() {
+        JsonMapper mapper = JsonMapper.builder()
+                .addMixIn(Car.class, OtherCarMixIn.class)
+                .addMixIn(Truck.class, OtherTruckMixIn.class)
+                .build();
+
+        Car car = new Car("Mercedes-Benz", "S500", 5, 250.0);
+        Truck truck = mapper.convertValue(car, Truck.class);
+        // Car -> Truck
+        assertThat(truck).extracting(Vehicle::getMake, Vehicle::getModel)
+                .containsExactly("Mercedes-Benz", "S500");
+    }
+
+    @Getter
+    @AllArgsConstructor
+    @JsonTypeInfo(
+            use = JsonTypeInfo.Id.NAME,
+            include = JsonTypeInfo.As.PROPERTY,
+            property = "type")
+    @JsonSubTypes({
+            @JsonSubTypes.Type(value = NoArgsCar.class, name = "car"),
+            @JsonSubTypes.Type(value = NoArgsTruck.class, name = "truck")
+    })
+    private static abstract class NoArgsVehicle {
+        private final String make;
+        private final String model;
+    }
+
+    @Getter
+    private static class NoArgsCar extends NoArgsVehicle {
+        private final int seatingCapacity;
+        private final double topSpeed;
+
+        @JsonCreator
+        public NoArgsCar(
+                @JsonProperty("make") String make,
+                @JsonProperty("model") String model,
+                @JsonProperty("seating") int seatingCapacity,
+                @JsonProperty("topSpeed") double topSpeed) {
+            super(make, model);
+            this.seatingCapacity = seatingCapacity;
+            this.topSpeed = topSpeed;
+        }
+    }
+
+    @Getter
+    private static class NoArgsTruck extends NoArgsVehicle {
+        private final double payloadCapacity;
+
+        @JsonCreator
+        public NoArgsTruck(
+                @JsonProperty("make") String make,
+                @JsonProperty("model") String model,
+                @JsonProperty("payload") double payloadCapacity) {
+            super(make, model);
+            this.payloadCapacity = payloadCapacity;
+        }
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    private static class AnotherFleet {
+        private List<NoArgsVehicle> vehicles;
+    }
+
+    @Test
+    @SneakyThrows
+    public void testDeserializationWithoutNoArgConstructors() {
+        JsonMapper mapper = JsonMapper.builder().build();
+
+        NoArgsCar car = new NoArgsCar("Mercedes-Benz", "S500", 5, 250.0);
+        NoArgsTruck truck = new NoArgsTruck("Isuzu", "NQR", 7500.0);
+
+        List<NoArgsVehicle> vehicles = new ArrayList<>();
+        vehicles.add(car);
+        vehicles.add(truck);
+
+        AnotherFleet fleet = new AnotherFleet();
+        fleet.setVehicles(vehicles);
+
+        String result = mapper.writeValueAsString(fleet);
+        // language=JSON
+        String expectJson = """
+                [
+                  {
+                    "make": "Mercedes-Benz",
+                    "model": "S500",
+                    "topSpeed": 250.0,
+                    "seatingCapacity": 5
+                  },
+                  {
+                    "make": "Isuzu",
+                    "model": "NQR",
+                    "payloadCapacity": 7500.0
+                  }
+                ]
+                """;
+        System.out.println(result);
     }
 }
