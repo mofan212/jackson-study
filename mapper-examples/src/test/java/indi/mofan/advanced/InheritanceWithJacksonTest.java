@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.AnnotatedMember;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
@@ -422,26 +423,33 @@ public class InheritanceWithJacksonTest implements WithAssertions {
         vehicles.add(car);
         vehicles.add(truck);
 
-        AnotherFleet fleet = new AnotherFleet();
-        fleet.setVehicles(vehicles);
+        JavaType type = mapper.getTypeFactory()
+                .constructCollectionType(List.class, NoArgsVehicle.class);
 
-        String result = mapper.writeValueAsString(fleet);
+        String result = mapper
+                /*
+                 * 需要指定序列化列表的元素类型，否则无法正确输出 type，
+                 * 或者另外使用一个对象包装下 `List<NoArgsVehicle>` 也能达到要求
+                 */
+                .writerFor(type)
+                .writeValueAsString(vehicles);
         // language=JSON
         String expectJson = """
                 [
                   {
+                    "type": "car",
                     "make": "Mercedes-Benz",
                     "model": "S500",
                     "topSpeed": 250.0,
                     "seatingCapacity": 5
                   },
                   {
+                    "type": "truck",
                     "make": "Isuzu",
                     "model": "NQR",
                     "payloadCapacity": 7500.0
                   }
-                ]
-                """;
-        System.out.println(result);
+                ]""";
+        JsonAssertions.assertThatJson(result).isEqualTo(expectJson);
     }
 }
