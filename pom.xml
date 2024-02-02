@@ -24,6 +24,7 @@
         <jackson.version>2.16.0</jackson.version>
         <commons.lang3>3.13.0</commons.lang3>
         <commons.io>2.15.1</commons.io>
+        <commons.collections4>4.4</commons.collections4>
         <guava.version>33.0.0-jre</guava.version>
     </properties>
 
@@ -70,6 +71,12 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>${commons.io}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>${commons.collections4}</version>
         </dependency>
 
         <dependency>
