@@ -32,3 +32,7 @@
 - [Jackson – Bidirectional Relationships](https://www.baeldung.com/jackson-bidirectional-relationships-and-infinite-recursion)
 - [Working with Tree Model Nodes in Jackson](https://www.baeldung.com/jackson-json-node-tree-model)
 - [More Jackson Annotations](https://www.baeldung.com/jackson-advanced-annotations)
+- [Inheritance with Jackson](https://www.baeldung.com/jackson-inheritance)
+- [Guide to @JsonFormat in Jackson](https://www.baeldung.com/jackson-jsonformat)
+- [Mapping a Dynamic JSON Object with Jackson](https://www.baeldung.com/jackson-mapping-dynamic-object)
+- [Spring Boot: Customize the Jackson ObjectMapper](https://www.baeldung.com/spring-boot-customize-jackson-objectmapper)
