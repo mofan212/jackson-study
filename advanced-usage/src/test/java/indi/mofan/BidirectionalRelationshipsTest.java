@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import net.javacrumbs.jsonunit.assertj.JsonAssertions;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 
@@ -373,7 +374,7 @@ public class BidirectionalRelationshipsTest implements WithAssertions {
 
         Item value = mapper.readValue(result, Item.class);
         assertThat(value).extracting(i -> i.getOwner().getUserItems())
-                .asList()
+                .asInstanceOf(InstanceOfAssertFactories.LIST)
                 .isNotNull()
                 .isEmpty();
     }

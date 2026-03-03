@@ -26,7 +26,7 @@ public class JacksonDeserializeTest implements WithAssertions {
             {
               "iAge": 21
             }
-                        """;
+            """;
 
     @Getter
     @Setter
@@ -81,10 +81,9 @@ public class JacksonDeserializeTest implements WithAssertions {
         validDeserializeToTargetClass(MySecondData.class);
     }
 
-    @Getter
-    @Setter
+    @Getter(onMethod_ = @JsonProperty("iAge"))
+    @Setter(onMethod_ = @JsonProperty("iAge"))
     static class MyThirdData {
-        @JsonProperty("iAge")
         private Integer iAge;
     }
 
@@ -194,7 +193,7 @@ public class JacksonDeserializeTest implements WithAssertions {
         assertThat(value).extracting(i -> i.iAge).isEqualTo(21);
 
         JsonMapper jsonMapper = JsonMapper.builder()
-                // 使用 MixIn 为 Setter 添加  @JsonProperty 注解
+                // 使用 MixIn 为 Setter 添加 @JsonProperty 注解
                 .addMixIn(MySixthData.class, MySixthDataMixIn.class)
                 .build();
         // 依旧不能序列化

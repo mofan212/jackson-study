@@ -1,6 +1,7 @@
 package indi.mofan;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import lombok.Getter;
@@ -34,7 +35,10 @@ public class UsingOptionalTest implements WithAssertions {
         book.setTitle("Oliver Twist");
         book.setSubTitle(Optional.of("The Parish Boy's Progress"));
 
-        JsonMapper mapper = JsonMapper.builder().build();
+        JsonMapper mapper = JsonMapper.builder()
+                // 2.17+ 默认开启此特性，需显式关闭才能复现奇怪的序列化结果
+                .disable(MapperFeature.REQUIRE_HANDLERS_FOR_JAVA8_OPTIONALS)
+                .build();
         String result = mapper.writeValueAsString(book);
         String expectJson = """
                 {
@@ -51,7 +55,7 @@ public class UsingOptionalTest implements WithAssertions {
 
     @Test
     public void testDeserialization() {
-        //language=JSON
+        // language=JSON
         String targetJson = """
                 {
                   "title": "Oliver Twist",
