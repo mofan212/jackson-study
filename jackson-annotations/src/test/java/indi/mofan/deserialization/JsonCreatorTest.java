@@ -2,9 +2,11 @@ package indi.mofan.deserialization;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.experimental.FieldNameConstants;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 
@@ -14,7 +16,7 @@ import org.junit.jupiter.api.Test;
  * @link <a href="https://www.baeldung.com/jackson-annotations#1-jsoncreator">JsonCreator</a>
  */
 public class JsonCreatorTest implements WithAssertions {
-    //language=JSON
+    // language=JSON
     public static final String TARGET_JSON = """
             {
               "id": 1,
@@ -49,5 +51,51 @@ public class JsonCreatorTest implements WithAssertions {
         assertThat(bean).isNotNull()
                 .extracting(BeanWithCreator::getId, BeanWithCreator::getName)
                 .containsExactly(1, "My bean");
+    }
+
+    enum MyEnum {
+        ONE(1), TWO(2);
+
+        private final int code;
+
+        MyEnum(int code) {
+            this.code = code;
+        }
+
+        public int code() {
+            return code;
+        }
+    }
+
+    @Getter
+    @FieldNameConstants
+    static class HasEnumClass {
+        private final MyEnum myEnum;
+        private final String str;
+
+        @JsonCreator
+        public HasEnumClass(@JsonProperty(Fields.myEnum) MyEnum myEnum,
+                            @JsonProperty(Fields.str) String str) {
+            this.myEnum = myEnum;
+            this.str = str;
+        }
+    }
+
+    @Test
+    @SneakyThrows
+    public void testJsonCreatorWithEnumProperties() {
+        JsonMapper mapper = JsonMapper.builder().build();
+
+        // language=JSON
+        String json = """
+                {
+                  "myEnum": "TWO",
+                  "str": "hello"
+                }
+                """;
+        JsonNode jsonNode = mapper.readTree(json);
+        HasEnumClass hasEnumClass = mapper.treeToValue(jsonNode, HasEnumClass.class);
+        assertThat(hasEnumClass).extracting(HasEnumClass::getMyEnum, HasEnumClass::getStr)
+                .containsExactly(MyEnum.TWO, "hello");
     }
 }
